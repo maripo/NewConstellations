@@ -5,28 +5,32 @@
 <script src="src/delaunay.js"></script>
 </head>
 <body onLoad="initCanvas();">
-<div style="position:absolute;left:0px;top:0px;">
-<div style="width:480px;height:480px;">
-	<canvas id="canvas" width="480" height="480" style="background-color:black;position:absolute;
-		z-index:1;">
+	<div style="position: absolute; left: 0px; top: 0px;">
+		<div style="width: 480px; height: 480px;">
+			<canvas id="canvas" width="480" height="480"
+				style="background-color: black; position: absolute; z-index: 1;">
 	</canvas>
-	<canvas id="drawing" width="480" height="480" 
-		style="position:absolute;z-index:2;cursor:crosshair" 
-		onmousedown="startDraw()" onmousemove="stroke()"
-		onmouseup="finishDraw()">
+			<canvas id="drawing" width="480" height="480"
+				style="position: absolute; z-index: 2; cursor: crosshair"
+				onmousedown="startDraw()" onmousemove="stroke()"
+				onmouseup="finishDraw()">
 	</canvas>
-</div>
-<div>
-	Brightness: <input type="range" id="skyBrightness" min="0" max="100" value="50" style="width:320px;"
-	onChange="setThreshold(this)">
-</div>
-<div>
-	Name: <input type="text" style="width:200px;"/>
-</div>
-<div>
-	<input type="button" value="Submit" onclick="test()"/>
-</div>
-</div>
+		</div>
+		<div>
+			Brightness: <input type="range" id="skyBrightness" min="0" max="100"
+				value="50" style="width: 320px;" onChange="setThreshold(this)">
+		</div>
+		<div>
+			Name: <input type="text" style="width: 200px;" />
+		</div>
+		<div>
+			<input type="checkbox" id="checkShowLine" onchange="toggleLine(this)" />
+			<label for="checkShowLine">Show Lines</label>
+		</div>
+		<div>
+			<input type="button" value="Submit" />
+		</div>
+	</div>
 </body>
 </html>
 

@@ -1,8 +1,9 @@
 var stars = null;
 var context = null;
 var canvas = null;
-var drawingContext = null;
 var drawingCanvas = null;
+var drawingContext = null;
+var showLine = false;
 
 function initCanvas() {
     canvas = document.getElementById('canvas');
@@ -10,7 +11,7 @@ function initCanvas() {
     drawingCanvas = document.getElementById('drawing');
     drawingContext = drawingCanvas.getContext('2d');
     initStars();
-    drawStars(0);
+    drawStars(0.3);
 }
 var drawing = false;
 var prevX = 0;
@@ -19,12 +20,11 @@ function startDraw () {
 	drawing = true;
 	prevX = event.x;
 	prevY = event.y;
-	console.log("startDraw");
 }
 function stroke () {
 	if (!drawing) return;
 	drawingContext.beginPath();
-	drawingContext.strokeStyle = 'cyan';
+	drawingContext.strokeStyle = 'yellow';
 	drawingContext.lineWidth = 4;
 	drawingContext.moveTo (prevX, prevY)
 	drawingContext.lineTo (event.x, event.y);
@@ -34,7 +34,6 @@ function stroke () {
 }
 function finishDraw () {
 	drawing = false;
-	console.log("finishDraw");
 }
 function drawStars (brightness) {
 	var threathold = (1-brightness) * 6;
@@ -51,36 +50,33 @@ function drawStars (brightness) {
 		starsToShow.push(star);
 		context.beginPath();
 	    context.arc(star.x, star.y, 
-	    		5 - (star.magnitude)*0.5, //magnitude
+	    		8 - (star.magnitude), //magnitude
 	    		0, 2 * Math.PI, false);
-	    context.fillStyle = 'rgba(255,255,255,'+(1-star.magnitude/6)+')';
+	    context.fillStyle = 'rgba(255,255,255,'+(1-star.magnitude/18)+')';
 	    context.fill();
 	}
-	var d = new Delauney(WIDTH, HEIGHT);
-	var triangles = d.split(starsToShow);
-	for (var i=0; i<triangles.length; i++ ){
-		console.log("Triangle No. " + i);
-		var t = triangles[i];
-		for (j=0; j<3; j++) {
-			var e = t.edges[j];
+	if (showLine) {
+		var edges = new Delauney(WIDTH, HEIGHT).split(starsToShow);
+		for (var i=0; i<edges.length; i++ ){
+			var e = edges[i];
 			context.beginPath();
 			context.strokeStyle = 'cyan';
 			context.lineWidth = 1;
 			context.moveTo (e.node0.x, e.node0.y);
 			context.lineTo (e.node1.x, e.node1.y);
 			context.stroke();
-			
 		}
 	}
 }
-var STAR_COUNT = 200;
+var STAR_COUNT = 400;
 function initStars () {
 	stars = [];
 	for (var i=0; i<STAR_COUNT; i++) {
 		stars.push(Star.createRandom());
 	}
 }
-function setThreshold(sender) {
+function setThreshold() {
+	var sender = document.getElementById('skyBrightness');
 	drawStars(sender.value/100);
 }
 var WIDTH = 480;
@@ -96,7 +92,7 @@ Star.createRandom = function () {
 	return new Star (
 			Math.random() * WIDTH,
 			Math.random() * HEIGHT,
-			(1-rand*rand*rand)* 6.0,
+			(1-rand*rand*rand*rand)* 6.0,
 			'white');
 };
 function test () {
@@ -107,4 +103,8 @@ function test () {
 			 {x:Math.sqrt(3), y:3}
 			 ]
 			);
+}
+function toggleLine(sender) {
+	showLine = sender.checked;
+	setThreshold();
 }

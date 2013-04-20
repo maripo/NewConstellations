@@ -33,8 +33,27 @@ Delauney.prototype.split = function (nodes) {
 			tmpTriangles.push(mergedTriangles[j]);
 		this.triangles = tmpTriangles;
 	}
-	//TODO create edge list
-	return this.triangles;
+	return this.getUniqueEdges();
+};
+Delauney.prototype.getUniqueEdges = function () {
+	var triangles = this.triangles;
+	var allEdges = [];
+	var uniqueEdges = [];
+	for (var i=0; i<triangles.length; i++) {
+		allEdges.push(triangles[i].edges[0]);
+		allEdges.push(triangles[i].edges[1]);
+		allEdges.push(triangles[i].edges[2]);
+	}
+	for (var i=0; i<allEdges.length; i++) {
+		var duplicated = false;
+		for (var j=0; j<i; j++) {
+			if (allEdges[i].isEqualTo(allEdges[j]))
+				duplicated = true;
+		}
+		if (!duplicated && !allEdges[i].isOriginal())
+			uniqueEdges.push(allEdges[i]);
+	}
+	return uniqueEdges;
 };
 Delauney.prototype.merge = function (triangles, node) {
 	var allEdges = [];
@@ -113,6 +132,9 @@ var Edge = function (node0, node1) {
 	this.node0 = node0;
 	this.node1 = node1;
 };
+Edge.prototype.isOriginal = function () {
+	return (this.node0.original || this.node1.original);
+}
 Edge.prototype.isEqualTo = function (e) {
 	var result =  
 			(this.node0.x == e.node0.x && this.node0.y == e.node0.y
