@@ -3,8 +3,6 @@ var Delauney = function (width, height) {
 	this.width = width;
 	this.height = height;
 	this.triangles = [];
-	var edges = [];
-	var nodes = [];
 	this.triangles.push (
 			new Triangle ([
 	               {x:0,y:0,original:true},
