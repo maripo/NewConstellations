@@ -14,7 +14,73 @@ var height = 480;
 function initCanvas(_width, _height) {
 	width = document.body.clientWidth;//_width;
 	height = window.innerHeight - 66;
-	editor = new Editor();
+	editor = new Editor(width, height);
+	editor.initCanvas(width, height);
+	initStars();
+    editor.drawStars(0.1);
+}
+
+var STAR_DENSITY = 1/1200;
+function getStarCount () {
+	return Math.floor(width * height * STAR_DENSITY);
+}
+function initStars () {
+	stars = [];
+	var starCount = getStarCount();
+	for (var i=0; i<starCount; i++) {
+		stars.push(Star.createRandom());
+	}
+}
+function setThreshold() {
+	var sender = document.getElementById('skyBrightness');
+	editor.drawStars(sender.value/100);
+}
+var Star = function (x, y, magnitude, color) {
+	this.x = x;
+	this.y = y;
+	this.magnitude = magnitude;
+	this.color = color;
+};
+Star.prototype.getAlpha = function () {
+	return (1-this.magnitude/12);
+};
+Star.prototype.getRadius = function () {
+	return 8 - (this.magnitude);
+}
+Star.prototype.getColorExpression = function () {
+	var col =  'rgba('+this.color.r+','+this.color.g+','+this.color.b+','+this.getAlpha()+')';
+	//console.log(col)
+	return col;
+}
+var COLOR_MINIMUM = 160;
+Star.createRandom = function () {
+	var rand = Math.random();
+	var r = COLOR_MINIMUM + Math.floor(Math.random() * (255-COLOR_MINIMUM));
+	var g = COLOR_MINIMUM + Math.floor(Math.random() * (255-COLOR_MINIMUM));
+	var b = COLOR_MINIMUM + Math.floor(Math.random() * (255-COLOR_MINIMUM));
+	return new Star (
+			Math.random() * width,
+			Math.random() * height,
+			(1-Math.pow(rand,6)) * 6.0,
+			{r:r, g:g, b:b});
+};
+function test () {
+	var triangle = new Triangle(
+			[
+			 {x:0, y:0},
+			 {x:2*Math.sqrt(3), y:0},
+			 {x:Math.sqrt(3), y:3}
+			 ]
+			);
+}
+function toggleLine(sender) {
+	showLine = sender.checked;
+	setThreshold();
+}
+
+var Editor = function () {
+};
+Editor.prototype.initCanvas = function () {
     canvas = document.getElementById('canvas');
     context = canvas.getContext('2d');
     drawingCanvas = document.getElementById('drawing');
@@ -30,11 +96,19 @@ function initCanvas(_width, _height) {
     drawingCanvas.style.height = height + 'px';
     drawingCanvas.width = width;
     drawingCanvas.height = height;
-    initStars();
-    drawStars(0.3);
+};
+Editor.prototype.renderEdge = function (edge) {
+	var rank = 7-Math.max(edge.node0.magnitude, edge.node1.magnitude);
+	context.beginPath();
+	var alpha = rank/8;
+	context.strokeStyle = 'rgba(137, 207, 240, ' + alpha + ')';
+	context.lineWidth = rank / 3;
+	context.moveTo (edge.node0.x, edge.node0.y);
+	context.lineTo (edge.node1.x, edge.node1.y);
+	context.stroke();
 }
 
-function drawStars (brightness) {
+Editor.prototype.drawStars = function (brightness) {
 	var threshold = (1-brightness) * 6;
 	var r = Math.floor(brightness*40);
 	var g = Math.floor(brightness*40);
@@ -49,9 +123,9 @@ function drawStars (brightness) {
 		starsToShow.push(star);
 		context.beginPath();
 	    context.arc(star.x, star.y, 
-	    		8 - (star.magnitude), //magnitude
+	    		star.getRadius(), //magnitude
 	    		0, 2 * Math.PI, false);
-	    context.fillStyle = 'rgba(255,255,255,'+(1-star.magnitude/18)+')';
+	    context.fillStyle = star.getColorExpression();
 	    context.fill();
 	}
 	if (!showLine) return;
@@ -70,63 +144,7 @@ function drawStars (brightness) {
 		}
 	}
 }
-var STAR_DENSITY = 1/1200;
-function getStarCount () {
-	return Math.floor(width * height * STAR_DENSITY);
-}
-function initStars () {
-	stars = [];
-	var starCount = getStarCount();
-	for (var i=0; i<starCount; i++) {
-		stars.push(Star.createRandom());
-	}
-}
-function setThreshold() {
-	var sender = document.getElementById('skyBrightness');
-	drawStars(sender.value/100);
-}
-var Star = function (x, y, magnitude, color) {
-	this.x = x;
-	this.y = y;
-	this.magnitude = magnitude;
-	this.color = color;
-};
-Star.createRandom = function () {
-	var rand = Math.random();
-	return new Star (
-			Math.random() * width,
-			Math.random() * height,
-			(1-rand*rand*rand*rand)* 6.0,
-			'white');
-};
-function test () {
-	var triangle = new Triangle(
-			[
-			 {x:0, y:0},
-			 {x:2*Math.sqrt(3), y:0},
-			 {x:Math.sqrt(3), y:3}
-			 ]
-			);
-}
-function toggleLine(sender) {
-	showLine = sender.checked;
-	setThreshold();
-}
-
-var Editor = function () {
-	
-};
-Editor.prototype.renderEdge = function (edge) {
-	var rank = 7-Math.max(edge.node0.magnitude, edge.node1.magnitude);
-	context.beginPath();
-	var alpha = rank/8;
-	context.strokeStyle = 'rgba(137, 207, 240, ' + alpha + ')';
-	context.lineWidth = rank / 3;
-	context.moveTo (edge.node0.x, edge.node0.y);
-	context.lineTo (edge.node1.x, edge.node1.y);
-	context.stroke();
-}
-
+/* Painting */
 function startDraw () {
 	drawing = true;
 	prevX = event.x;
@@ -145,4 +163,24 @@ function stroke () {
 }
 function finishDraw () {
 	drawing = false;
+}
+var phase = 0; //sin(phase)
+var blurOn = false;
+var blurFunc = null;
+
+/* Blur */
+function toggleBlur () {
+	if (blurOn) {
+		window.clearInterval(blurFunc);
+	}
+	else {
+		blurFunc = window.setInterval(changeBlur, 200);
+	}
+	blurOn = !blurOn;
+}
+function  changeBlur() {
+	phase += 1;
+	if (phase>360) phase = phase-360;
+	var blurVal = Math.floor((Math.sin(phase/(2*Math.PI)))*8);
+    wrapper.style.webkitFilter = "blur("+blurVal+"px)"; 
 }
