@@ -1,0 +1,39 @@
+var Delauney = function (width, height) {
+	//init
+	this.width = width;
+	this.height = height;
+	var triangles = [];
+	var edges = [];
+	var nodes = [];
+	
+	//TODO create base triangles
+};
+Delauney.prototype.split = function (nodes) {
+	this.nodes = nodes;
+	for (int i=0; i<this.nodes.length; i++) {
+		var trianglesToMerge = getIncluderTriangles (this.nodes[i], this.triangles);
+		this.merge(triangles);
+		//TODO
+	}
+	//TODO
+};
+
+Delauney.prototype.getIncluderTriangles (node, triangles) {
+	var result = [];
+	for (var i=0; i<triangles.length; i++) {
+		if (triangles[i].isIncluderOf(node))
+			result.push (triangles[i]);
+	}
+	return result;
+};
+
+var Triangle = function (points) {
+	this.points = points;
+	//TODO calculate center coordinate & radius
+	this.center = {x:0, y:0}; //TODO
+};
+Triangle.prototype.isIncluderOf = function (point) {
+	var dx = this.center.x - point.x;
+	var dy = this.center.y - point.y;
+	return dx * dx + dy + dy < radius * radius;
+};

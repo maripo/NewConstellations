@@ -10,7 +10,7 @@ function initCanvas() {
     drawingCanvas = document.getElementById('drawing');
     drawingContext = drawingCanvas.getContext('2d');
     initStars();
-    drawStars(0.5);
+    drawStars(0);
 }
 var drawing = false;
 var prevX = 0;
@@ -54,8 +54,24 @@ function drawStars (brightness) {
 	    context.fillStyle = 'rgba(255,255,255,'+(1-star.magnitude/6)+')';
 	    context.fill();
 	}
+	var d = new Delauney(WIDTH, HEIGHT);
+	var triangles = d.split(stars);
+	for (var i=0; i<triangles.length; i++ ){
+		console.log("Triangle No. " + i);
+		var t = triangles[i];
+		for (j=0; j<3; j++) {
+			var e = t.edges[j];
+			context.beginPath();
+			context.strokeStyle = 'cyan';
+			context.lineWidth = 1;
+			context.moveTo (e.node0.x, e.node0.y);
+			context.lineTo (e.node1.x, e.node1.y);
+			context.stroke();
+			
+		}
+	}
 }
-var STAR_COUNT = 400;
+var STAR_COUNT = 50;
 function initStars () {
 	stars = [];
 	for (var i=0; i<STAR_COUNT; i++) {
@@ -78,6 +94,21 @@ Star.createRandom = function () {
 	return new Star (
 			Math.random() * WIDTH,
 			Math.random() * HEIGHT,
-			(1-rand*rand*rand)* 6.0,
+			//(1-rand*rand*rand)* 6.0,
+			1,
 			'white');
+};
+function test () {
+	var triangle = new Triangle(
+			[
+			 {x:0, y:0},
+			 {x:2*Math.sqrt(3), y:0},
+			 {x:Math.sqrt(3), y:3}
+			 ]
+			);
+	/*
+	console.log(triangle.center.x);
+	console.log(triangle.center.y);
+	console.log(triangle.radius);
+	*/
 }
