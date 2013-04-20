@@ -43,10 +43,12 @@ function drawStars (brightness) {
 	var b = Math.floor(brightness*120);
 	canvas.style.backgroundColor = "rgb("+r+","+g+","+b+")";
 	context.clearRect(0, 0, WIDTH, HEIGHT);
+	var starsToShow = [];
 	for (i=0; i<stars.length; i++) {
 		var star = stars[i];
 		if (threathold < star.magnitude)
 			continue;
+		starsToShow.push(star);
 		context.beginPath();
 	    context.arc(star.x, star.y, 
 	    		5 - (star.magnitude)*0.5, //magnitude
@@ -55,7 +57,7 @@ function drawStars (brightness) {
 	    context.fill();
 	}
 	var d = new Delauney(WIDTH, HEIGHT);
-	var triangles = d.split(stars);
+	var triangles = d.split(starsToShow);
 	for (var i=0; i<triangles.length; i++ ){
 		console.log("Triangle No. " + i);
 		var t = triangles[i];
@@ -71,7 +73,7 @@ function drawStars (brightness) {
 		}
 	}
 }
-var STAR_COUNT = 50;
+var STAR_COUNT = 200;
 function initStars () {
 	stars = [];
 	for (var i=0; i<STAR_COUNT; i++) {
@@ -94,8 +96,7 @@ Star.createRandom = function () {
 	return new Star (
 			Math.random() * WIDTH,
 			Math.random() * HEIGHT,
-			//(1-rand*rand*rand)* 6.0,
-			1,
+			(1-rand*rand*rand)* 6.0,
 			'white');
 };
 function test () {
@@ -106,9 +107,4 @@ function test () {
 			 {x:Math.sqrt(3), y:3}
 			 ]
 			);
-	/*
-	console.log(triangle.center.x);
-	console.log(triangle.center.y);
-	console.log(triangle.radius);
-	*/
 }

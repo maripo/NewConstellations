@@ -7,14 +7,14 @@ var Delauney = function (width, height) {
 	var nodes = [];
 	this.triangles.push (
 			new Triangle ([
-	               {x:0,y:0},
-	               {x:this.width,y:0},
-	               {x:0,y:this.height}
+	               {x:0,y:0,original:true},
+	               {x:this.width,y:0,original:true},
+	               {x:0,y:this.height,original:true}
 	               ]),
 			new Triangle ([
-	               {x:this.width,y:0},
-	               {x:0,y:this.height},
-	               {x:this.width,y:this.height}
+	               {x:this.width,y:0,original:true},
+	               {x:0,y:this.height,original:true},
+	               {x:this.width,y:this.height,original:true}
 	               ])
 	);
 };
