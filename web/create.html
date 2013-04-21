@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=480, user-scalable=no, maximum-scale=0.6667" />
 <style type="text/css">
 body {
 	color: white;
@@ -29,8 +30,13 @@ body {
 				style="background-color: black; position: absolute; z-index: 1;"></canvas>
 			<canvas id="drawing" width="480" height="480"
 				style="position: absolute; z-index: 2; cursor: crosshair"
-				onmousedown="startDraw()" onmousemove="stroke()"
-				onmouseup="finishDraw()"></canvas>
+				onmousedown="startDraw()" 
+				onmousemove="stroke()"
+				onmouseup="finishDraw()"
+				ontouchstart="startDrawTouch()" 
+				ontouchmove="strokeTouch()"
+				ontouchend="finishDrawTouch()"
+				></canvas>
 		</div>
 		<div id="controllers">
 			<div>

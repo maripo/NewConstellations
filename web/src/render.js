@@ -178,12 +178,14 @@ Editor.prototype.drawStars = function (brightness) {
 	}
 }
 /* Painting */
-function startDraw () {
+function startDraw (e) {
+    e.preventDefault();
 	drawing = true;
 	prevX = event.x;
 	prevY = event.y;
 }
-function stroke () {
+function stroke (e) {
+    e.preventDefault();    
 	if (!drawing) return;
 	drawingContext.beginPath();
 	drawingContext.strokeStyle = 'yellow';
@@ -194,7 +196,31 @@ function stroke () {
 	prevX = event.x;
 	prevY = event.y;
 }
-function finishDraw () {
+function finishDraw (e) {
+    e.preventDefault();
+	drawing = false;
+}
+function startDrawTouch (e) {
+    e.preventDefault();
+	drawing = true;
+	prevX = event.touches[0].x;
+	prevY = event.touches[0].y;
+	alert(prevX)
+}
+function strokeTouch (e) {
+    e.preventDefault();    
+	if (!drawing) return;
+	drawingContext.beginPath();
+	drawingContext.strokeStyle = 'yellow';
+	drawingContext.lineWidth = 4;
+	drawingContext.moveTo (prevX, prevY)
+	drawingContext.lineTo (event.touches[0].x, event.touches[0].y);
+	drawingContext.stroke();
+	prevX = event.touches[0].x;
+	prevY = event.touches[0].y;
+}
+function finishDrawTouch (e) {
+    e.preventDefault();
 	drawing = false;
 }
 var phase = 0; //sin(phase)
