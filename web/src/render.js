@@ -14,6 +14,7 @@ var height = 480;
 var MARGIN_BOTTOM = 80;
 
 function initCanvas(_width, _height) {
+	window.scrollTo(0,0);
 	width = document.body.clientWidth;//_width;
 	height = window.innerHeight - MARGIN_BOTTOM;
 	editor = new Editor(width, height);
@@ -201,26 +202,25 @@ function finishDraw (e) {
 	drawing = false;
 }
 function startDrawTouch (e) {
-    e.preventDefault();
+    event.preventDefault();
 	drawing = true;
-	prevX = event.touches[0].x;
-	prevY = event.touches[0].y;
-	alert(prevX)
+	prevX = event.touches[0].pageX;
+	prevY = event.touches[0].pageY;
 }
 function strokeTouch (e) {
-    e.preventDefault();    
+	event.preventDefault();    
 	if (!drawing) return;
 	drawingContext.beginPath();
 	drawingContext.strokeStyle = 'yellow';
 	drawingContext.lineWidth = 4;
 	drawingContext.moveTo (prevX, prevY)
-	drawingContext.lineTo (event.touches[0].x, event.touches[0].y);
+	drawingContext.lineTo (event.touches[0].pageX, event.touches[0].pageY);
 	drawingContext.stroke();
-	prevX = event.touches[0].x;
-	prevY = event.touches[0].y;
+	prevX = event.touches[0].pageX;
+	prevY = event.touches[0].pageY;
 }
 function finishDrawTouch (e) {
-    e.preventDefault();
+	event.preventDefault();
 	drawing = false;
 }
 var phase = 0; //sin(phase)
