@@ -1,3 +1,8 @@
+/**
+ * Usage
+ * var nodes = [{x:x0,y:y0},{x:x1,y:y1},{x:x2,y:y2}.....];
+ * var edges = new Delauney(w, h).triangulate(nodes);
+ */
 var Delauney = function (width, height) {
 	//init
 	this.width = width;
@@ -16,7 +21,7 @@ var Delauney = function (width, height) {
 	               ])
 	);
 };
-Delauney.prototype.split = function (nodes) {
+Delauney.prototype.triangulate = function (nodes) {
 	this.nodes = nodes;
 	for (var i=0; i<this.nodes.length; i++) {
 		var tmpTriangles = [];

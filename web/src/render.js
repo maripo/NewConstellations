@@ -20,7 +20,7 @@ function initCanvas(_width, _height) {
 	editor = new Editor(width, height);
 	editor.initCanvas(width, height);
 	initStars({preset:SHUTTLE});
-    editor.drawStars(0.1);
+    editor.drawStars(0.0);
 }
 
 var STAR_DENSITY = 1/1200;
@@ -166,13 +166,14 @@ Editor.prototype.drawStars = function (brightness) {
 	// Magnitude Rank
 	for (var i=6.5-threshold; i<6; i++) {
 		var limit = 6-i;
+		//var limit = 6;
 		var starsToLine = [];
 		for (var j=0; j<starsToShow.length; j++) {
 			if (starsToShow[j].magnitude < limit) {
 				starsToLine.push(starsToShow[j]);
 			}
 		}
-		var edges = new Delauney(width, height).split(starsToLine);
+		var edges = new Delauney(width, height).triangulate(starsToLine);
 		for (var j=0; j<edges.length; j++ ){
 			editor.renderEdge(edges[j]);
 		}
@@ -180,13 +181,13 @@ Editor.prototype.drawStars = function (brightness) {
 }
 /* Painting */
 function startDraw (e) {
-    e.preventDefault();
+    //e.preventDefault();
 	drawing = true;
 	prevX = event.x;
 	prevY = event.y;
 }
 function stroke (e) {
-    e.preventDefault();    
+    //    e.preventDefault();    
 	if (!drawing) return;
 	drawingContext.beginPath();
 	drawingContext.strokeStyle = 'yellow';
@@ -198,7 +199,7 @@ function stroke (e) {
 	prevY = event.y;
 }
 function finishDraw (e) {
-    e.preventDefault();
+    //e.preventDefault();
 	drawing = false;
 }
 function startDrawTouch (e) {
